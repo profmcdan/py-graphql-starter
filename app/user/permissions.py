@@ -1,5 +1,14 @@
 from rest_framework import permissions
-from django.contrib.auth import get_user_model
+from django_graphene_permissions.permissions import BasePermission
+
+
+class IsAuthenticated(BasePermission):
+    """Allows access only to admin users. """
+    message = "You have to be logged in to perform this action"
+
+    @staticmethod
+    def has_permission(context):
+        return context.user and context.user.is_authenticated
 
 
 class IsSuperAdmin(permissions.BasePermission):
@@ -18,9 +27,9 @@ class IsAdmin(permissions.BasePermission):
         return bool(request.user and request.user.roles and 'ADMIN' in request.user.roles)
 
 
-class IsRegularUser(permissions.BasePermission):
+class IsBasicUser(permissions.BasePermission):
     """Allows access only to talent users. """
-    message = "Only Regular users are authorized to perform this action."
+    message = "Only Basic users are authorized to perform this action."
 
     def has_permission(self, request, view):
-        return bool(request.user and request.user.roles and 'REGULAR' in request.user.roles)
+        return bool(request.user and request.user.roles and 'BASIC' in request.user.roles)

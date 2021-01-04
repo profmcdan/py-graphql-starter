@@ -15,15 +15,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+from django.views.decorators.csrf import csrf_exempt
+from graphql import GraphQLCoreBackend
+from graphene_file_upload.django import FileUploadGraphQLView
+
+
+class GraphQLCustomCoreBackend(GraphQLCoreBackend):
+    def __init__(self, executor=None):
+        # type: (Optional[Any]) -> None
+        super().__init__(executor)
+        self.execute_params['allow_subscriptions'] = True
 
 
 urlpatterns = [
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/v1/doc/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('api/v1/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-    path('api/v1/api-auth/', include('rest_framework.urls')),
     path('admin/', admin.site.urls),
-    path('api/v1/auth/', include('user.urls')),
     path('chat/', include('chat.urls')),
+    path('graphql/', csrf_exempt(FileUploadGraphQLView.as_view(graphiql=True,
+                                                               backend=GraphQLCustomCoreBackend())), name='graphql'),
 ]

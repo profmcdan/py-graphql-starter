@@ -45,11 +45,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'storages',
-    'rest_framework',
-    'rest_framework.authtoken',
-    'drf_spectacular',
+    'graphene_django',
     'django_filters',
     'import_export',
+    'social_django',
     'user',
     'chat',
 ]
@@ -69,6 +68,36 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'core.urls'
 IMPORT_EXPORT_USE_TRANSACTIONS = True
+
+GRAPHENE = {
+    'SCHEMA': 'core.schema.schema',
+    'MIDDLEWARE': [
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    ],
+}
+
+AUTHENTICATION_BACKENDS = [
+    'graphql_jwt.backends.JSONWebTokenBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+GRAPHQL_JWT = {
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
+    'JWT_EXPIRATION_DELTA': timedelta(minutes=5),
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
+    'JWT_ISSUER': 'Prunedge Tech',
+    'JWT_SECRET_KEY': 'SomeKey',
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer'
+}
+
+GRAPHENE_DJANGO_EXTRAS = {
+    'DEFAULT_PAGINATION_CLASS': 'graphene_django_extras.paginations.LimitOffsetGraphqlPagination',
+    'DEFAULT_PAGE_SIZE': 20,
+    'MAX_PAGE_SIZE': 50,
+    'CACHE_ACTIVE': True,
+    'CACHE_TIMEOUT': 300    # seconds
+}
 
 TEMPLATES = [
     {
@@ -174,27 +203,13 @@ DATE_INPUT_FORMATS = [
     '%d %B %Y', '%d %B, %Y',  # '25 October 2006', '25 October, 2006'
 ]
 
-REST_FRAMEWORK = {
-    #    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'DEFAULT_PAGINATION_CLASS': 'core.pagination.CustomPagination',
-    'PAGE_SIZE': 10,
-    # 'DATE_INPUT_FORMATS': ["%d/%m/%Y", ],
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    ),
-    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
-    # 'EXCEPTION_HANDLER': 'core.utils.custom_exception_handler'
-}
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/oyidentity')
-STATIC_TMP = os.path.join(BASE_DIR, 'static/oyidentity')
+app_name = 'app_name'
+STATIC_ROOT = os.path.join(BASE_DIR, f'staticfiles/{app_name}')
+STATIC_TMP = os.path.join(BASE_DIR, f'static/{app_name}')
 os.makedirs(STATIC_TMP, exist_ok=True)
 os.makedirs(STATIC_ROOT, exist_ok=True)
 
-STATIC_URL = '/static/oyidentity/'
+STATIC_URL = f'/static/{app_name}/'
 
 # AWS CONFIG
 # to make sure all your files gives read only access to the files
@@ -208,7 +223,7 @@ AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
-AWS_LOCATION = 'static/oyidentity'
+AWS_LOCATION = f'static/{app_name}'
 # AWS_QUERYSTRING_EXPIRE = 10
 # s3 private media settings
 PRIVATE_MEDIA_LOCATION = 'private'
@@ -228,32 +243,6 @@ STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 DEFAULT_FILE_STORAGE = 'core.storage_backends.MediaStorage'
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': True,
-
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
-    'VERIFYING_KEY': None,
-    'AUDIENCE': None,
-    'ISSUER': None,
-
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',
-
-    'JTI_CLAIM': 'jti',
-
-    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
-    'SLIDING_TOKEN_LIFETIME': timedelta(days=7),
-    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=14),
-}
 
 LOGGING = {
     'version': 1,
@@ -314,7 +303,28 @@ CHANNEL_LAYERS = {
     },
 }
 
-# REDIS_DEFAULT_CONNECTION_POOL = redis.ConnectionPool.from_url(REDIS_URL)
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ''
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ''
+
+SOCIAL_AUTH_FACEBOOK_KEY = ''
+SOCIAL_AUTH_FACEBOOK_SECRET = ''
+
+SOCIAL_AUTH_TWITTER_KEY = os.environ.get('TWITTER_KEY', '')
+SOCIAL_AUTH_TWITTER_SECRET = os.environ.get('TWITTER_SECRET', '')
+
+SOCIAL_AUTH_PIPELINE = [
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.social_auth.associate_by_email',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+]
+
 
 CELERY_BEAT_SCHEDULE = {
     # "sample_task": {
@@ -338,30 +348,4 @@ if DEBUG == 0:
         send_default_pii=True
     )
 
-SPECTACULAR_SETTINGS = {
-    'SCHEMA_PATH_PREFIX': r'/api/v1',
-    'DEFAULT_GENERATOR_CLASS': 'drf_spectacular.generators.SchemaGenerator',
-    'SERVE_PERMISSIONS': ['rest_framework.permissions.AllowAny'],
-    'COMPONENT_SPLIT_PATCH': True,
-    'COMPONENT_SPLIT_REQUEST': True,
-    "SWAGGER_UI_SETTINGS": {
-        "deepLinking": True,
-        "persistAuthorization": True,
-        "displayOperationId": True,
-        "displayRequestDuration": True
-    },
-    'UPLOADED_FILES_USE_URL': True,
-    'TITLE': 'Application API',
-    'DESCRIPTION': 'API Doc',
-    'VERSION': '1.0.0',
-    'LICENCE': {'name': 'BSD License'},
-    'CONTACT': {'name': 'Daniel Ale', 'email': 'daniel.ale@prunedge.com'},
 
-    # Oauth2 related settings. used for example by django-oauth2-toolkit.
-    # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#oauth-flows-object
-    'OAUTH2_FLOWS': [],
-    'OAUTH2_AUTHORIZATION_URL': None,
-    'OAUTH2_TOKEN_URL': None,
-    'OAUTH2_REFRESH_URL': None,
-    'OAUTH2_SCOPES': None,
-}

@@ -36,3 +36,23 @@ def send_password_reset_email(email_data):
     text_alternative = text_template.render(email_data)
     send_email('Password Reset',
                email_data['email'], html_alternative, text_alternative)
+
+
+@shared_task
+def send_confirm_password_reset_email(email_data):
+    html_template = get_template('emails/password_reset_template_ack.html')
+    text_template = get_template('emails/password_reset_template_ack.txt')
+    html_alternative = html_template.render(email_data)
+    text_alternative = text_template.render(email_data)
+    send_email('Password Reset Confirmation',
+               email_data['email'], html_alternative, text_alternative)
+
+
+@shared_task
+def send_verify_email(email_data):
+    html_template = get_template('emails/new_user_welcome_template.html')
+    text_template = get_template('emails/new_user_welcome_template.txt')
+    html_alternative = html_template.render(email_data)
+    text_alternative = text_template.render(email_data)
+    send_email('Account Verification',
+               email_data['email'], html_alternative, text_alternative)

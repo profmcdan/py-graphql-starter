@@ -1,4 +1,3 @@
-
 from django.core.files import File
 from urllib.request import urlretrieve
 import uuid
@@ -18,7 +17,7 @@ from django.utils.crypto import get_random_string
 
 
 USER_ROLE = (
-    ('REGULAR', 'REGULAR'),
+    ('BASIC', 'BASIC'),
     ('ADMIN', 'ADMIN'),
     ('SUPERADMIN', 'SUPERADMIN'),
 )
@@ -35,7 +34,7 @@ TOKEN_TYPE = (
 
 
 def default_role():
-    return ['REGULAR']
+    return ['BASIC']
 
 
 class User(AbstractBaseUser, PermissionsMixin):
