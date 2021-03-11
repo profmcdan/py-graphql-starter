@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: docker/dev/Dockerfile
-    image: profmcdan/api-starter
+    image: prunedge/api-starter
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./app:/app

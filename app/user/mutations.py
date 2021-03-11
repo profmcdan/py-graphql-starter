@@ -182,10 +182,10 @@ class LoginMutation(graphql_jwt.JSONWebTokenMutation):
 
 
 class Mutation(graphene.ObjectType):
-    user_create = CreateUserMutation.Field()
-    user_verify_email = VerifyEmailMutation.Field()
-    user_update = UserSerializerMutation.UpdateField()
-    user_delete = UserSerializerMutation.DeleteField()
+    create_user = CreateUserMutation.Field()
+    verify_user_email = VerifyEmailMutation.Field()
+    update_user = UserSerializerMutation.UpdateField()
+    delete_user = UserSerializerMutation.DeleteField()
     forgot_password = ForgetPasswordMutation.Field()
     reset_password = ResetPasswordMutation.Field()
     social_auth = graphql_social_auth.SocialAuthJWT.Field()

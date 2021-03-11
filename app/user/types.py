@@ -50,7 +50,7 @@ class VerifyTokenOutputType(graphene.ObjectType):
 
 
 class RegisterUserInputType(graphene.InputObjectType):
-    email_verify_token = graphene.String(required=True)
+    # email_verify_token = graphene.String(required=True)
     password = graphene.String(required=True)
     firstname = graphene.String(required=True)
     lastname = graphene.String(required=True)
