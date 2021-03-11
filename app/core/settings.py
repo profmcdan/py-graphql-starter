@@ -25,12 +25,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'yc_zvg#_m*$3rw1_ekj_4%n!rw65ev#h*0(7-x^4k8q38@m^wf'
+SECRET_KEY = os.environ.get('SECRET_KEY', None)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.environ.get('DEBUG', 1))
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', 'api.oyidentity.tanz-api.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -93,7 +93,7 @@ GRAPHQL_JWT = {
 
 GRAPHENE_DJANGO_EXTRAS = {
     'DEFAULT_PAGINATION_CLASS': 'graphene_django_extras.paginations.LimitOffsetGraphqlPagination',
-    'DEFAULT_PAGE_SIZE': 20,
+    'DEFAULT_PAGE_SIZE': 10,
     'MAX_PAGE_SIZE': 50,
     'CACHE_ACTIVE': True,
     'CACHE_TIMEOUT': 300    # seconds
@@ -287,7 +287,7 @@ SWAGGER_SETTINGS = {
     },
 }
 
-TOKEN_LIFESPAN = 24  # hours
+TOKEN_LIFESPAN = 24*7  # hours
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://redis:6379")
 FLOWER_BASIC_AUTH = os.environ.get('FLOWER_BASIC_AUTH')
