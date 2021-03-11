@@ -203,7 +203,7 @@ DATE_INPUT_FORMATS = [
     '%d %B %Y', '%d %B, %Y',  # '25 October 2006', '25 October, 2006'
 ]
 
-app_name = 'app_name'
+app_name = os.environ.get('APP_NAME', 'app_name')
 STATIC_ROOT = os.path.join(BASE_DIR, f'staticfiles/{app_name}')
 STATIC_TMP = os.path.join(BASE_DIR, f'static/{app_name}')
 os.makedirs(STATIC_TMP, exist_ok=True)
@@ -219,7 +219,7 @@ AWS_SECRET_ACCESS_KEY = os.environ.get('ACCESS_SECRET_AWS')
 AWS_STORAGE_BUCKET_NAME = os.environ.get('ACCESS_BUCKET_NAME_AWS')
 AWS_S3_SIGNATURE_VERSION = 's3v4'
 AWS_S3_REGION_NAME = 'eu-west-2'
-# AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
@@ -229,9 +229,9 @@ AWS_LOCATION = f'static/{app_name}'
 PRIVATE_MEDIA_LOCATION = 'private'
 PRIVATE_FILE_STORAGE = 'core.storage_backends.PrivateMediaStorage'
 
-CLOUDFRONT_DOMAIN = os.environ.get('CLOUDFRONT_DOMAIN', '')
-CLOUDFRONT_ID = os.environ.get('CLOUDFRONT_ID', '')
-AWS_S3_CUSTOM_DOMAIN = CLOUDFRONT_DOMAIN
+# CLOUDFRONT_DOMAIN = os.environ.get('CLOUDFRONT_DOMAIN', '')
+# CLOUDFRONT_ID = os.environ.get('CLOUDFRONT_ID', '')
+# AWS_S3_CUSTOM_DOMAIN = CLOUDFRONT_DOMAIN
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, AWS_LOCATION),
