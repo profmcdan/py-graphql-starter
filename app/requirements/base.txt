@@ -37,3 +37,4 @@ django-graphene-permissions==0.0.4
 graphene-file-upload==1.2.2
 graphene-django-extras==0.4.9
 django-graphql-social-auth==0.1.4
+django-channels-graphql-ws==0.8.0

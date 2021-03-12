@@ -2,6 +2,7 @@ import graphene
 import graphql_jwt
 from user.query import Query as UserQuery
 from user.mutations import Mutation as UserMutation
+from user.subscriptions import UserSubscription
 from company.query import Query as CompanyQuery
 from company.mutations import Mutation as CompanyMutation
 
