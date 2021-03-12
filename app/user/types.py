@@ -77,3 +77,7 @@ class RegisterUserOutputType(graphene.ObjectType):
     access_token = graphene.String(required=True)
     # role = graphene.String(required=True)
 
+
+class UserListOutputType(graphene.ObjectType):
+    total_count = graphene.Int()
+    results = graphene.List(UserType)

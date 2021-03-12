@@ -48,6 +48,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=17, blank=True, null=True)
     roles = ArrayField(models.CharField(max_length=20, blank=True,
                                         choices=USER_ROLE), default=default_role, size=4)
+    company = models.ForeignKey('company.Company', on_delete=models.SET_NULL, null=True, blank=True,
+                                related_name='company_users')
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     last_login = models.DateTimeField(null=True)
