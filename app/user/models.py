@@ -17,7 +17,8 @@ from django.utils.crypto import get_random_string
 
 
 USER_ROLE = (
-    ('BASIC', 'BASIC'),
+    ('STUDENT', 'STUDENT'),
+    ('INSTRUCTOR', 'INSTRUCTOR'),
     ('ADMIN', 'ADMIN'),
     ('SUPERADMIN', 'SUPERADMIN'),
 )

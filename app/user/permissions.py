@@ -1,5 +1,6 @@
 from rest_framework import permissions
 from django_graphene_permissions.permissions import BasePermission
+from .models import User
 
 
 class IsAuthenticated(BasePermission):
@@ -31,11 +32,30 @@ class IsAdmin(permissions.BasePermission):
                     and 'ADMIN' in context.user.roles)
 
 
-class IsBasicUser(permissions.BasePermission):
-    """Allows access only to talent users. """
-    message = "Only Basic users are authorized to perform this action."
+class IsStudentUser(permissions.BasePermission):
+    """Allows access only to student users. """
+    message = "Only students users are authorized to perform this action."
 
     @staticmethod
     def has_permission(context):
         return bool(context.user and context.user.is_authenticated and context.user.roles
-                    and 'BASIC' in context.user.roles)
+                    and 'STUDENT' in context.user.roles)
+
+
+class IsInstructorUser(permissions.BasePermission):
+    """Allows access only to instructor users. """
+    message = "Only instructors users are authorized to perform this action."
+
+    @staticmethod
+    def has_permission(context):
+        return bool(context.user and context.user.is_authenticated and context.user.roles
+                    and 'STUDENT' in context.user.roles)
+
+
+class IsCompanyUserAndAdmin(BasePermission):
+    """Allows access only to company user who is an admin. """
+    message = "You have to be part of a company to perform this action"
+
+    @staticmethod
+    def has_permission(context):
+        return bool(context.user.is_authenticated and context.user.company and 'ADMIN' in context.user.roles)
